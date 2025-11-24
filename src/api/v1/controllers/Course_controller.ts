@@ -3,7 +3,12 @@ import { HTTP_STATUS } from "../../../../src/constants/httpConstants";
 import { Course } from "../models/Course_model";
 
 let courses : Course[] = [];
+let nextCourseId = 1;
 
+
+/**
+ * GET /api/courses
+ */
 export const getAllCourses = (req: Request, res: Response): void => {
     res.status(HTTP_STATUS.OK).json({
         message: "All courses fetched successfully",
@@ -11,6 +16,10 @@ export const getAllCourses = (req: Request, res: Response): void => {
     });
 };
 
+/**
+ * POST /api/courses
+ * expects { Course_Name, Course_credit, Course_duration, Course_description }
+ */
 export const addCourse = (req:Request, res:Response): void => {
     const {Course_Name, Course_credit, Course_duration, Course_description} = req.body;
 
@@ -21,12 +30,22 @@ export const addCourse = (req:Request, res:Response): void => {
         return;
     }
 
+    // Validate numeric fields
+  const creditNum = Number(Course_credit);
+  const durationNum = Number(Course_duration);
+  if (Number.isNaN(creditNum) || Number.isNaN(durationNum)) {
+    res.status(HTTP_STATUS.BAD_REQUEST).json({
+      message: "Course_credit and Course_duration must be numbers",
+    });
+    return;
+  }
+
     const newCourse: Course = {
-        Course_id: courses.length + 1,
+        Course_id: nextCourseId++,
         Course_Name,
-        Course_credit,
+        Course_credit: creditNum,
         Course_description,
-        Course_duration,
+        Course_duration: durationNum,
     };
 
     courses.push(newCourse);
@@ -37,11 +56,19 @@ export const addCourse = (req:Request, res:Response): void => {
     });
 };
 
+/**
+ * PUT /api/courses/:id
+ */
 export const UpdateCourse = (req: Request, res: Response): void => {
-  const Course_id = parseInt(req.params.id);
+  const courseId = Number(req.params.id);
+  if (Number.isNaN(courseId)) {
+    res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Invalid course id" });
+    return;
+  }
+
   const { Course_Name, Course_credit, Course_duration, Course_description} = req.body;
 
-  const CourseIndex = courses.findIndex((c) => c.Course_id === Course_id);
+  const CourseIndex = courses.findIndex((c) => c.Course_id === courseId);
 
   if (CourseIndex === -1) {
     res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Course not found" });
@@ -51,9 +78,9 @@ export const UpdateCourse = (req: Request, res: Response): void => {
   const updatedCourse: Course = {
     ...courses[CourseIndex],
     Course_Name: Course_Name || courses[CourseIndex].Course_Name,
-    Course_credit: Course_credit || courses[CourseIndex].Course_credit,
-    Course_description: Course_description || courses[CourseIndex].Course_description,
-    Course_duration: Course_duration || courses[CourseIndex].Course_duration,
+    Course_credit: Course_credit != null ? Number(Course_credit) : courses[CourseIndex].Course_credit,
+    Course_description: Course_description ?? courses[CourseIndex].Course_description,
+    Course_duration: Course_duration != null ? Number(Course_duration) : courses[CourseIndex].Course_duration,
   };
 
   courses[CourseIndex] = updatedCourse;
@@ -64,8 +91,16 @@ export const UpdateCourse = (req: Request, res: Response): void => {
   });
 };
 
+/**
+ * DELETE /api/courses/:id
+ */
 export const deleteCourse = (req: Request, res: Response): void => {
-  const Course_id = parseInt(req.params.id);
+  const Course_id = Number(req.params.id);
+  if (Number.isNaN(Course_id)) {
+    res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Invalid course id" });
+    return;
+  }
+  
   const existing = courses.find((c) => c.Course_id=== Course_id);
 
   if (!existing) {

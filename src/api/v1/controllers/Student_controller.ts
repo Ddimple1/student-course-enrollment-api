@@ -1,7 +1,6 @@
 import { Request, Response }from "express"; 
 import { HTTP_STATUS } from "../../../../src/constants/httpConstants";
 import { Student } from "../models/Student_model";
-
 let students: Student[] = [];
 
 export const getAllStudents = (req: Request, res: Response): void => {

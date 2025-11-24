@@ -5,6 +5,10 @@ import { Enrollment } from "../models/Enrollment_model";
 let enrollments: Enrollment[] = [];
 let nextEnrollmentNumber = 1;
 
+/**
+ * GET /api/enrollments
+ */
+
 export const getAllEnrollments = (req: Request, res: Response): void => {
     res.status(HTTP_STATUS.OK).json({
         message: "All enrollments fetched successfully",
@@ -12,10 +16,15 @@ export const getAllEnrollments = (req: Request, res: Response): void => {
     });
 };
 
+/**
+ * POST /api/enrollments
+ * expects { Enrollment_date, Enrollment_status }
+ */
+
 export const addEnrollment = (req:Request, res:Response): void => {
     const {Enrollment_date, Enrollment_status} = req.body;
 
-    if ( !Enrollment_date == null || Enrollment_status == null ) {
+    if ( Enrollment_date == null || Enrollment_status == null ) {
         res.status(HTTP_STATUS.BAD_REQUEST).json({
             message: "All fields are required",
         });
@@ -36,8 +45,18 @@ export const addEnrollment = (req:Request, res:Response): void => {
     });
 };
 
+/**
+ * PUT /api/enrollments/:id
+ */
+
+
 export const UpdateEnrollment = (req: Request, res: Response): void => {
   const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Invalid enrollment id" });
+    return;
+  }
+
   const { Enrollment_date, Enrollment_status } = req.body;
 
   const enrollmentIndex = enrollments.findIndex((e) => e.Enrollment_number === id);
@@ -61,9 +80,15 @@ export const UpdateEnrollment = (req: Request, res: Response): void => {
   });
 };
 
+
 // DELETE /api/students/:id
 export const deleteEnrollment = (req: Request, res: Response): void => {
   const id = Number(req.params.id); 
+  if (Number.isNaN(id)) {
+    res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Invalid enrollment id" });
+    return;
+  }
+
   const enrollment = enrollments.find(e => e.Enrollment_number === id);
 
   if (!enrollment) {
