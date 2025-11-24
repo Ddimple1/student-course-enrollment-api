@@ -11,6 +11,6 @@ const router: Router = Router();
 router.get("/", getAllEnrollments);
 router.post("/", addEnrollment);
 router.put("/:id", UpdateEnrollment);
-router.delete(":id", deleteEnrollment);
+router.delete("/:id", deleteEnrollment);
 
 export default router;
