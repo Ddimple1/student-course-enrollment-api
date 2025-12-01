@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import rateLimit from "express-rate-limit";
+import setupSwagger from "./config/swagger";
 import {
     accessLogger,
     errorLogger,
@@ -56,5 +57,8 @@ app.use("/api/users", userRoutes);
 
 // Global error handling middleware
 app.use(errorHandler);
+
+// Setup Swagger
+setupSwagger(app);
 
 export default app;

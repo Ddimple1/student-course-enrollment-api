@@ -2,6 +2,38 @@
 import Joi from "joi";
 import { Student } from "../models/Student_model";
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Student:
+ *       type: object
+ *       required:
+ *         - FullName
+ *         - email
+ *       properties:
+ *         FullName:
+ *           type: string
+ *           minLength: 1
+ *           description: Full name of the student
+ *           example: "Dimple Dimple"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Student's email address
+ *           example: "dimple@example.com"
+ *         program:
+ *           type: string
+ *           nullable: true
+ *           description: Program name (optional)
+ *           example: "CS"
+ *         enrollment_year:
+ *           type: integer
+ *           minimum: 1900
+ *           maximum: 2100
+ *           description: Year of enrollment (optional)
+ *           example: 2023
+ */
 export const createStudentSchema = Joi.object<Student>({
   FullName: Joi.string().min(1).required(),
   email: Joi.string().email().required(),

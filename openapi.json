@@ -1,0 +1,642 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Student Enrollment API Documnetation",
+    "version": "1.0.0",
+    "description": "This is the API documentation for the Student Enrollment API Project."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "Local server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Course": {
+        "type": "object",
+        "required": [
+          "Course_Name",
+          "Course_description",
+          "Course_credit",
+          "Course_duration"
+        ],
+        "properties": {
+          "Course_id": {
+            "type": "integer",
+            "description": "Auto-generated course ID",
+            "example": 101
+          },
+          "Course_Name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Name of the course",
+            "example": "Intro to Programming"
+          },
+          "Course_description": {
+            "type": "string",
+            "minLength": 3,
+            "description": "Brief description of the course",
+            "example": "Learn the basics of programming"
+          },
+          "Course_credit": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Credit value of the course",
+            "example": 3
+          },
+          "Course_duration": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Duration in weeks",
+            "example": 12
+          }
+        }
+      },
+      "Student": {
+        "type": "object",
+        "required": [
+          "FullName",
+          "email"
+        ],
+        "properties": {
+          "FullName": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Full name of the student",
+            "example": "Dimple Dimple"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Student's email address",
+            "example": "dimple@example.com"
+          },
+          "program": {
+            "type": "string",
+            "nullable": true,
+            "description": "Program name (optional)",
+            "example": "CS"
+          },
+          "enrollment_year": {
+            "type": "integer",
+            "minimum": 1900,
+            "maximum": 2100,
+            "description": "Year of enrollment (optional)",
+            "example": 2023
+          }
+        }
+      },
+      "Enrollment": {
+        "type": "object",
+        "required": [
+          "Enrollment_date",
+          "Enrollment_status"
+        ],
+        "properties": {
+          "Enrollment_number": {
+            "type": "integer",
+            "description": "Auto-generated enrollment ID",
+            "example": 5001
+          },
+          "Enrollment_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date of enrollment",
+            "example": "2025-11-12"
+          },
+          "Enrollment_status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ],
+            "description": "Current status of enrollment",
+            "example": "active"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/courses": {
+      "get": {
+        "summary": "Get all courses (filter & sort)",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [
+          {
+            "name": "Course_credit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Course_duration",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Course_Name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Course_Name",
+                "Course_credit"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of courses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Course"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new course (admin)",
+        "tags": [
+          "Courses"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              },
+              "example": {
+                "Course_Name": "Intro to Programming",
+                "Course_description": "Basics of programming",
+                "Course_credit": 3,
+                "Course_duration": 12
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Course created"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/courses/{id}": {
+      "put": {
+        "summary": "Update a course by ID (admin)",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              },
+              "example": {
+                "Course_Name": "Advanced Programming",
+                "Course_description": "Advanced topics in programming",
+                "Course_credit": 4,
+                "Course_duration": 14
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Course updated successfully"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a course by ID (admin)",
+        "tags": [
+          "Courses"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course deleted successfully"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/enrollments": {
+      "get": {
+        "summary": "Get all enrollments (admin only)",
+        "tags": [
+          "Enrollments"
+        ],
+        "parameters": [
+          {
+            "name": "Enrollment_status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Enrollment_date"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of enrollments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Enrollment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create an enrollment (student)",
+        "tags": [
+          "Enrollments"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Enrollment"
+              },
+              "example": {
+                "studentId": 1,
+                "courseId": 1,
+                "Enrollment_date": "2025-11-12",
+                "Enrollment_status": "active"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Enrollment created"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/enrollments/{id}": {
+      "put": {
+        "summary": "Update an enrollment by ID (admin only)",
+        "tags": [
+          "Enrollments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Enrollment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Enrollment updated successfully"
+          },
+          "404": {
+            "description": "Enrollment not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete an enrollment by ID (admin only)",
+        "tags": [
+          "Enrollments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment deleted successfully"
+          },
+          "404": {
+            "description": "Enrollment not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/students": {
+      "get": {
+        "summary": "Get list of students",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "program",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by program"
+          },
+          {
+            "name": "enrollment_year",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by enrollment year"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FullName"
+              ]
+            },
+            "description": "Sort by field"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of students",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Student"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new student (only admin)",
+        "tags": [
+          "Students"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Student"
+              },
+              "example": {
+                "FullName": "Alice Smith",
+                "email": "alice@example.com",
+                "program": "CS",
+                "enrollment_year": 2023
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student created"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/students/{id}": {
+      "put": {
+        "summary": "Update a student by ID (only admin)",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Student"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Student updated successfully"
+          },
+          "404": {
+            "description": "Student not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a student by ID (only admin)",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student deleted successfully"
+          },
+          "404": {
+            "description": "Student not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}
