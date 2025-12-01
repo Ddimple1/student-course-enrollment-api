@@ -4,9 +4,32 @@ import { Student } from "../models/Student_model";
 let students: Student[] = [];
 
 export const getAllStudents = (req: Request, res: Response): void => {
+  let filteredStudents = [...students];
+
+    // Filtering
+    const { program, enrollment_year } = req.query;
+
+    if (program) {
+        filteredStudents = filteredStudents.filter(
+            s => s.program?.toLowerCase() === (program as string).toLowerCase()
+        );
+    }
+
+    if (enrollment_year) {
+        filteredStudents = filteredStudents.filter(
+            s => s.enrollment_year === Number(enrollment_year)
+        );
+    }
+
+    // Sorting
+    const { sort } = req.query;
+    if (sort === "FullName") {
+        filteredStudents.sort((a, b) => a.FullName.localeCompare(b.FullName));
+    }
+
     res.status(HTTP_STATUS.OK).json({
         message: "All students fetched successfully",
-        data: students,
+        data:filteredStudents,
     });
 };
 

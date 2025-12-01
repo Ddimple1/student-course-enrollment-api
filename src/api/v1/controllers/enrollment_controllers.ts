@@ -10,6 +10,22 @@ let nextEnrollmentNumber = 1;
  */
 
 export const getAllEnrollments = (req: Request, res: Response): void => {
+  let filteredEnrollments = [...enrollments];
+
+    // Filtering
+    const { Enrollment_status } = req.query;
+    if (Enrollment_status) {
+        filteredEnrollments = filteredEnrollments.filter(
+            e => e.Enrollment_status.toLowerCase() === (Enrollment_status as string).toLowerCase()
+        );
+    }
+
+    // Sorting
+    const { sort } = req.query;
+    if (sort === "Enrollment_date") {
+        filteredEnrollments.sort((a, b) => new Date(a.Enrollment_date).getTime() - new Date(b.Enrollment_date).getTime());
+    }
+    
     res.status(HTTP_STATUS.OK).json({
         message: "All enrollments fetched successfully",
         data: enrollments,

@@ -10,6 +10,37 @@ let nextCourseId = 1;
  * GET /api/courses
  */
 export const getAllCourses = (req: Request, res: Response): void => {
+  let filteredCourses = [...courses];
+
+    // Filtering
+    const { Course_credit, Course_duration, Course_Name } = req.query;
+
+    if (Course_credit) {
+        filteredCourses = filteredCourses.filter(
+            c => c.Course_credit === Number(Course_credit)
+        );
+    }
+
+    if (Course_duration) {
+        filteredCourses = filteredCourses.filter(
+            c => c.Course_duration === Number(Course_duration)
+        );
+    }
+
+    if (Course_Name) {
+        filteredCourses = filteredCourses.filter(
+            c => c.Course_Name.toLowerCase().includes((Course_Name as string).toLowerCase())
+        );
+    }
+
+    // Sorting
+    const { sort } = req.query;
+    if (sort === "Course_Name") {
+        filteredCourses.sort((a, b) => a.Course_Name.localeCompare(b.Course_Name));
+    } else if (sort === "Course_credit") {
+        filteredCourses.sort((a, b) => a.Course_credit - b.Course_credit);
+    }
+    
     res.status(HTTP_STATUS.OK).json({
         message: "All courses fetched successfully",
         data: courses,
