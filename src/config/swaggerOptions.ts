@@ -31,7 +31,7 @@ const swaggerOptions: swaggerJsdoc.Options = {
         ],
     },
     apis: ["./src/api/v1/routes/Course_routes.ts", "./src/api/v1/routes/Enrollment_routes.ts", "./src/api/v1/routes/Student_routes.ts", "./src/api/v1/routes/user_Routes.ts",
-        "./src/api/v1/validators/CourseValidator.ts", "./src/api/v1/validators/studentValidator.ts", "./src/api/v1/validators/enrollmentValidator.ts"
+        "./src/api/v1/validators/courseValidator.ts", "./src/api/v1/validators/studentValidator.ts", "./src/api/v1/validators/enrollmentValidator.ts"
      ], // Path to the API docs
 };
 
