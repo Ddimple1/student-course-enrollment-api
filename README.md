@@ -46,3 +46,31 @@ Project Concept
 - Firebase authentication while authenticating students and using role-based authorization with firebase custom claims for students and admins
 
 - CRUD operations for creating my endpoints
+
+
+## How To start my Student Course Enrollment API
+
+1.  Clone the repository
+ - git clone https://github.com/Ddimple1/student-course-enrollment-api 
+
+2. first we need to do required installations
+ - Node.js
+ - npm install
+ - firestore account
+
+3. Run the API
+ - npm server start
+ - API will be available at http://localhost:3000
+
+4. My API live documentation available at: https://Ddimple1.github.io/student-course-enrollment-api/
+it includes:
+- all REST endpoints
+- Role-based access rules
+- Request/response schemas
+
+5. Get firebase idToken 
+- sign in a user through postman inorder to get the idToken
+
+6. Put the data based on the assigned access
+- admin - create student, 
+- student - can post enrollment
