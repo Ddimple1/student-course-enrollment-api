@@ -7,3 +7,6 @@ logs/
 
 # .gitignore
 final-project-5ffd8-firebase-adminsdk-fbsvc-8a6fa94152.json
+
+#
+.env

@@ -1,4 +1,7 @@
 import express, { Express } from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
 import rateLimit from "express-rate-limit";
 import setupSwagger from "./config/swagger";
 import {
